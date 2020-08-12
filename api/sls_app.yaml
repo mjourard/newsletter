@@ -1,0 +1,162 @@
+service: newsletter-api
+
+frameworkVersion: '>=1.28.0 <2.0.0'
+
+provider:
+  name: aws
+  runtime: go1.x
+  stage: ${opt:stage, 'dev'}
+  region: us-east-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:*:*:*"
+    - Effect: Allow
+      Action:
+        - ses:*
+      Resource: "*"
+
+# you can define service wide environment variables here
+  environment:
+    DYNAMO_TABLE: ${self:custom.DYNAMO_TABLE}
+    ENV_DEPLOYMENT: ${self:provider.stage}
+
+custom:
+  PERSIST_STACK_NAME: newsletter-api-data-persistence
+  DYNAMO_TABLE: ${cf:${self:custom.PERSIST_STACK_NAME}-${self:provider.stage}.RecipientTableName}
+  customDomain:
+    domainName: api.oyster.io
+    basePath: ''
+    stage: ${self:provider.stage}
+    createRoute53Record: true
+
+
+package:
+  exclude:
+    - ./**
+  include:
+    - ./bin/**
+
+functions:
+  addemail:
+    handler: bin/addemail
+    description: 'Records the passed in email to the recipients database'
+    timeout: 15 # in seconds (API Gateway has a timeout of 30 seconds)
+    events:
+      - http:
+          path: email
+          method: post
+          cors:
+            origins:
+              - '${ssm:/news/prod/ClientDomain}'
+            headers:
+              - Content-Type
+              - Accept-Encoding
+              - X-Bearer-Token
+            allowCredentials: true
+  getemails:
+    handler: bin/getemails
+    description: 'Returns the recorded emails within the table'
+    timeout: 15 # in seconds (API Gateway has a timeout of 30 seconds)
+    events:
+      - http:
+          path: getemails
+          method: get
+
+#plugins:
+#  - serverless-domain-manager
+
+# you can add CloudFormation resource templates here
+# resources:
+#   Resources:
+#     CloudfrontOAI:
+#       Type: 'AWS::CloudFront::CloudFrontOriginAccessIdentity'
+#       Properties:
+#         CloudFrontOriginAccessIdentityConfig:
+#           Comment: static content for TOE
+#     WebsiteCDN:
+#       Type: 'AWS::CloudFront::Distribution'
+#       Properties:
+#         DistributionConfig:
+#           Origins:
+#           - DomainName: !Join ['.', ['${ssm:/toe/prod/CFBucketName}', 's3.amazonaws.com'] ]
+#             Id: ToeS3Origin
+#             S3OriginConfig:
+#               OriginAccessIdentity: !Join ['/', ['origin-access-identity/cloudfront', !Ref CloudfrontOAI ] ]
+#           Enabled: 'true'
+#           Comment: 'Trick or eat distribution'
+#           DefaultRootObject: index.html
+#           Aliases:
+#             - www.guelphtrickoreat.ca
+#             - guelphtrickoreat.ca
+#           DefaultCacheBehavior:
+#             AllowedMethods:
+#               - GET
+#               - HEAD
+#               - OPTIONS
+#             TargetOriginId: ToeS3Origin
+#             ForwardedValues:
+#               QueryString: 'false'
+#               Cookies:
+#                 Forward: none
+#             ViewerProtocolPolicy: redirect-to-https
+#           PriceClass: PriceClass_100
+#           Restrictions:
+#             GeoRestriction:
+#               RestrictionType: whitelist
+#               Locations:
+#                 - CA
+#                 - US
+#                 - AU # Australia
+#                 - BE # Belgium
+#                 - DK # Denmark
+#                 - DE # Germany
+#                 - IE # Ireland
+#                 - IL # Israel
+#                 - NZ # New Zealand
+#                 - NL # Netherlands
+#                 - CH # Switzerland
+#                 - IO # British Indian Ocean Territory
+#                 - IT # Italy
+#                 - JP # Japan
+#                 - MY # Malaysia
+#           ViewerCertificate:
+#             MinimumProtocolVersion: TLSv1.1_2016
+#             SslSupportMethod: sni-only
+#             AcmCertificateArn: ${file(./account_config.yaml):ACMCertificateArn}
+#       DependsOn:
+#         - CloudfrontOAI
+#     WebsiteDNSRecord:
+#       Type: 'AWS::Route53::RecordSet'
+#       Properties:
+#         HostedZoneName: !Join ['', [ '${ssm:/toe/prod/BaseDomain}', '.' ] ]
+#         AliasTarget:
+#           DNSName: !GetAtt WebsiteCDN.DomainName
+#           HostedZoneId: Z2FDTNDATAQYW2
+#         Name: guelphtrickoreat.ca.
+#         Type: A
+#       DependsOn:
+#         - WebsiteCDN
+#     CFBucketPolicyS3:
+#       Type: 'AWS::S3::BucketPolicy'
+#       Properties:
+#         Bucket: guelphtrickoreat.ca
+#         PolicyDocument:
+#           Version: '2008-10-17'
+#           Id: PolicyForTOECloudFrontPrivateContent
+#           Statement:
+#             - Sid: '1'
+#               Effect: Allow
+#               Principal:
+#                 AWS: !Join [' ', ['arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity', !Ref CloudfrontOAI ] ]
+#               Action: s3:GetObject
+#               Resource: !Join ['', ['arn:aws:s3:::', '${ssm:/toe/prod/CFBucketName}', '/*' ] ]
+#       DependsOn:
+#         - CloudfrontOAI

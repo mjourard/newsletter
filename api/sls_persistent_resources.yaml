@@ -1,0 +1,21 @@
+service: newsletter-api-data-persistence
+
+frameworkVersion: '>=1.28.0 <2.0.0'
+
+package:
+  exclude:
+    - ./**
+provider:
+  name: aws
+  region: us-east-1
+  runtime: go1.x
+custom:
+  DYNAMO_TABLE: email-signups-${self:provider.stage}
+resources:
+  Resources:
+    Recipients: ${file(./resource/EmailSignupsDynamo.yaml)}
+  Outputs:
+    RecipientTableName:
+      Value: !Ref Recipients
+      Export:
+        Name: !Join [ "-", [ !Ref "AWS::StackName", RecipientTableName ] ]
