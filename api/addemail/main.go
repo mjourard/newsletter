@@ -43,10 +43,6 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 
 	ctx.Debugf("Received body: %s", request.Body)
 	sess, err := session.NewSession(&aws.Config{})
-	for header, value := range request.Headers {
-		ctx.Debugf("%s: %s", header, value)
-	}
-
 	if appType, ok := request.Headers["content-type"]; !ok || appType != "application/json"{
 		return events.APIGatewayProxyResponse{
 			StatusCode:        400,
