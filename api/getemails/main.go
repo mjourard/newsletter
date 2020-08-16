@@ -2,23 +2,19 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"github.com/aws/aws-sdk-go/service/dynamodb/expression"
-	log "github.com/sirupsen/logrus"
+	"github.com/mjourard/newsletter/api/pkg"
 	"os"
 	"time"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
-)
-
-const (
-	EnvDeployment string = "ENV_DEPLOYMENT"
-	EnvTable      string = "DYNAMO_TABLE"
 )
 
 type DynamoEmailsTableItem struct {
@@ -30,13 +26,9 @@ type RecipientEmail struct {
 	TimestampUTC string  `json:"addedtsutc"`
 }
 
-var ctx = log.WithFields(log.Fields{
-	"func": "getemails",
-	"env":  os.Getenv(EnvDeployment),
-})
-
 // Handler is our lambda handler invoked by the `lambda.Start` function call
-func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	logger := pkg.GetLogger(ctx)
 	var buf bytes.Buffer
 
 	sess, err := session.NewSession(&aws.Config{})
@@ -46,7 +38,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	proj := expression.NamesList(expression.Name("email"), expression.Name("addedts"))
 	expr, err := expression.NewBuilder().WithProjection(proj).Build()
 	if err != nil {
-		ctx.WithError(err)
+		logger.WithError(err).Error("Failed to build a new expression builder while trying to read from the table")
 		return events.APIGatewayProxyResponse{
 			StatusCode: 400,
 			Body:       "Error while trying construct the scanner request to scan the table: " + err.Error(),
@@ -57,11 +49,11 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		Limit:                    aws.Int64(500),
 		ExpressionAttributeNames: expr.Names(),
 		ProjectionExpression:     expr.Projection(),
-		TableName:                aws.String(os.Getenv(EnvTable)),
+		TableName:                aws.String(os.Getenv(pkg.EnvTable)),
 	})
 
 	if err != nil {
-		ctx.WithError(err)
+		logger.WithError(err).Error("Error while scanning the table")
 		return events.APIGatewayProxyResponse{
 			StatusCode: 400,
 			Body: "Error: while trying to scan table: " + err.Error(),
@@ -69,7 +61,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	}
 
 	if len(result.Items) == 0 {
-		ctx.Info("No items within table, returning 404")
+		logger.Info("No items within table, returning 404")
 		return events.APIGatewayProxyResponse{
 			StatusCode:        404,
 			Body:              "No results found in table",
@@ -81,10 +73,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		item := DynamoEmailsTableItem{}
 		err := dynamodbattribute.UnmarshalMap(i, &item)
 		if err != nil {
-			ctx.WithFields(log.Fields{
-				"msg": "error while unmarshalling",
-				"idx": idx,
-			}).WithError(err)
+			logger.WithError(err).Errorf("error while unmarshalling on idx %d", idx)
 			continue
 		}
 		tm := time.Unix(item.Addedts, 0)
@@ -95,10 +84,10 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		emails = append(emails, email)
 	}
 
-	ctx.Info("Finished scanning table, returning response")
+	logger.Info("Finished scanning table, returning response")
 	body, err := json.Marshal(emails)
 	if err != nil {
-		ctx.WithError(err)
+		logger.WithError(err).Error("Error while unmarshalling after a successful table scan")
 		return events.APIGatewayProxyResponse{
 			StatusCode:        400,
 			Body:              "Unable to return table scan due to an error during data transformation",

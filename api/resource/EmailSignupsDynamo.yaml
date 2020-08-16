@@ -2,14 +2,10 @@ Type: 'AWS::DynamoDB::Table'
 DeletionPolicy: Retain
 Properties:
   AttributeDefinitions:
-    - AttributeName: addedts
-      AttributeType: N
     - AttributeName: email
       AttributeType: S
   KeySchema:
     - AttributeName: email
       KeyType: HASH
-    - AttributeName: addedts
-      KeyType: RANGE
   BillingMode: PAY_PER_REQUEST
   TableName: ${self:custom.DYNAMO_TABLE}
