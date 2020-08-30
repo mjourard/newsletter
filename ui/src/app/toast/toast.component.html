@@ -1,0 +1,6 @@
+<div *ngIf="toastService.messages.length">
+  <h2>Messages</h2>
+  <button class="clear"
+          (click)="toastService.clear()">clear</button>
+  <div *ngFor='let message of toastService.messages'> {{message}} </div>
+</div>
