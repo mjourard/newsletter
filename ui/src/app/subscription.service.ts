@@ -1,9 +1,9 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Subscriber} from "./subscriber";
-import { Observable, of } from 'rxjs';
-import { ToastService } from "./toast.service";
-import { HttpClient, HttpHeaders} from "@angular/common/http";
-import { catchError, map, tap } from "rxjs/operators";
+import {Observable, of} from 'rxjs';
+import {ToastService} from "./toast.service";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {catchError, tap} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
@@ -15,13 +15,14 @@ export class SubscriptionService {
   private subscribeEmailUrl = this.baseUrl + '/email';
 
   private httpOptions = {
-    headers: new HttpHeaders({ 'Content-Type': 'application/json'})
+    headers: new HttpHeaders({'Content-Type': 'application/json'})
   }
 
   constructor(
     private http: HttpClient,
     private toastService: ToastService
-  ) { }
+  ) {
+  }
 
   subscribeEmail(email: string): Observable<any> {
     return this.http.post(this.subscribeEmailUrl, {email: email}, this.httpOptions).pipe(
