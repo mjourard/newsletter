@@ -12,7 +12,7 @@ const routes: Routes = [
   { path: 'faq', component: FaqComponent},
   { path: 'privacy-policy', component: PrivacyPolicyComponent},
   { path: 'home', component: HomeComponent},
-  { path: '', component: HomeComponent}
+  { path: '', redirectTo: '/home', pathMatch: 'full'}
 ];
 
 @NgModule({

@@ -18,17 +18,18 @@ import (
 )
 
 type DynamoEmailsTableItem struct {
-	Email string `json:"email"`
-	Addedts int64 `json:"addedts"`
+	Email   string `json:"email"`
+	Addedts int64  `json:"addedts"`
 }
 type RecipientEmail struct {
-	Email          string `json:"email"`
-	TimestampUTC string  `json:"addedtsutc"`
+	Email        string `json:"email"`
+	TimestampUTC string `json:"addedtsutc"`
 }
 
 // Handler is our lambda handler invoked by the `lambda.Start` function call
 func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	logger := pkg.GetLogger(ctx)
+	pkg.SetContext(ctx)
+	logger := pkg.GetLogger()
 	var buf bytes.Buffer
 
 	sess, err := session.NewSession(&aws.Config{})
@@ -38,11 +39,12 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 	proj := expression.NamesList(expression.Name("email"), expression.Name("addedts"))
 	expr, err := expression.NewBuilder().WithProjection(proj).Build()
 	if err != nil {
-		logger.WithError(err).Error("Failed to build a new expression builder while trying to read from the table")
-		return events.APIGatewayProxyResponse{
-			StatusCode: 400,
-			Body:       "Error while trying construct the scanner request to scan the table: " + err.Error(),
-		}, nil
+		return pkg.ErrorResponse(
+			400,
+			err,
+			"Failed to build a new expression builder while trying to read from the table",
+			"Error while trying construct the scanner request to scan the table: "+err.Error(),
+		), nil
 	}
 	result, err := svc.Scan(&dynamodb.ScanInput{
 		ConsistentRead:           aws.Bool(false),
@@ -53,20 +55,12 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 	})
 
 	if err != nil {
-		logger.WithError(err).Error("Error while scanning the table")
-		return events.APIGatewayProxyResponse{
-			StatusCode: 400,
-			Body: "Error: while trying to scan table: " + err.Error(),
-		}, nil
+		return pkg.ErrorResponse(400, err, "Error while scanning the table", "Error: while trying to scan table: "+err.Error()), nil
 	}
 
 	if len(result.Items) == 0 {
 		logger.Info("No items within table, returning 404")
-		return events.APIGatewayProxyResponse{
-			StatusCode:        404,
-			Body:              "No results found in table",
-			IsBase64Encoded:   false,
-		}, nil
+		return pkg.ErrorResponse(404, nil, "", "No results found in table"), nil
 	}
 
 	for idx, i := range result.Items {
@@ -87,23 +81,11 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 	logger.Info("Finished scanning table, returning response")
 	body, err := json.Marshal(emails)
 	if err != nil {
-		logger.WithError(err).Error("Error while unmarshalling after a successful table scan")
-		return events.APIGatewayProxyResponse{
-			StatusCode:        400,
-			Body:              "Unable to return table scan due to an error during data transformation",
-			IsBase64Encoded:   false,
-		}, err
+		return pkg.ErrorResponse(400, err, "Error while unmarshalling after a successful table scan", "Unable to return table scan due to an error during data transformation"), nil
 	}
 	json.HTMLEscape(&buf, body)
 
-	return events.APIGatewayProxyResponse{
-		StatusCode:      200,
-		IsBase64Encoded: false,
-		Body:            buf.String(),
-		Headers: map[string]string{
-			"Content-Type":           "application/json",
-		},
-	}, nil
+	return pkg.Response(200, buf.String()), nil
 }
 
 func main() {

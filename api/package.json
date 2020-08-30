@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "serverless": "^1.78.1",
+    "serverless": "^1.80.0",
     "serverless-domain-manager": "^4.2.0"
   }
 }

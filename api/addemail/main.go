@@ -29,23 +29,20 @@ type AddEmail struct {
 }
 
 type RecipientAddEmail struct {
-	Email string `json:"email"`
-	AddedTimeStamp int64 `json:"addedts"`
+	Email          string `json:"email"`
+	AddedTimeStamp int64  `json:"addedts"`
 }
 
 // Handler is our lambda handler invoked by the `lambda.Start` function call
 func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
-	logger := pkg.GetLogger(ctx)
+	pkg.SetContext(ctx)
+	logger := pkg.GetLogger()
 	logger.Debugf("Received body: %s", request.Body)
 	sess, err := session.NewSession(&aws.Config{})
-	if appType, ok := request.Headers["content-type"]; !ok || appType != "application/json"{
-		return events.APIGatewayProxyResponse{
-			StatusCode:        400,
-			Body:              "Error: request header was not 'application/json",
-		}, nil
+	if appType, ok := request.Headers["content-type"]; !ok || appType != "application/json" {
+		return pkg.ErrorResponse(400, nil, "", "Request header 'content-type' was not 'application/json"), nil
 	}
-
 
 	// Create DynamoDB client
 	svc := dynamodb.New(sess)
@@ -54,11 +51,7 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 	var email AddEmail
 	err = json.Unmarshal([]byte(request.Body), &email)
 	if err != nil {
-		logger.WithError(err).Error("Unable to unmarshal request body into AddEmail struct")
-		return events.APIGatewayProxyResponse{
-			StatusCode:        400,
-			Body:              "Error: unable to decode JSON request",
-		}, nil
+		return pkg.ErrorResponse(400, err, "Unable to unmarshal request body into AddEmail struct", "Unable to decode JSON request"), nil
 	}
 
 	recipientAddEmail := &RecipientAddEmail{
@@ -68,28 +61,20 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 	av, err := dynamodbattribute.MarshalMap(recipientAddEmail)
 
 	if err != nil {
-		logger.WithError(err).Error("Unable to marshal the RecipientAddEmail struct into something usable for dynamodb")
-		return events.APIGatewayProxyResponse{
-			StatusCode:        400,
-			Body:              "Error: unable to convert addemail to a savable item",
-		}, nil
+		return pkg.ErrorResponse(400, err, "Unable to marshal the RecipientAddEmail struct into something usable for dynamodb", "Unable to convert addemail to a savable item"), nil
 	}
 
 	condition := expression.AttributeNotExists(expression.Name("email"))
 	expr, err := expression.NewBuilder().WithCondition(condition).Build()
 	if err != nil {
-		logger.WithError(err).Error("Unable to build conditional expression when adding item to email")
-		return events.APIGatewayProxyResponse{
-			StatusCode: 400,
-			Body:       "Error while trying construct the putitem request to insert into the table",
-		}, nil
+		return pkg.ErrorResponse(400, err, "Unable to build conditional expression when adding item to email", "Error while trying construct the putitem request to insert into the table"), nil
 	}
 
 	// Create item in table Movies
 	input := &dynamodb.PutItemInput{
-		Item: av,
-		TableName: aws.String(os.Getenv(pkg.EnvTable)),
-		ConditionExpression: expr.Condition(),
+		Item:                     av,
+		TableName:                aws.String(os.Getenv(pkg.EnvTable)),
+		ConditionExpression:      expr.Condition(),
 		ExpressionAttributeNames: expr.Names(),
 	}
 
@@ -97,24 +82,19 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 	_, err = svc.PutItem(input)
 
 	if err != nil {
-		logger.WithError(err).Errorf("Unable to add item to table. Condition: %s", *expr.Condition())
 		bodyMsg := "Error: unable to add email to database. Reason unknown."
 		if awsErr, ok := err.(awserr.Error); ok {
 			switch awsErr.Code() {
 			case dynamodb.ErrCodeConditionalCheckFailedException:
-				bodyMsg = fmt.Sprintf("Error: email '%s' is already registered in the database.", recipientAddEmail.Email)
+				bodyMsg = fmt.Sprintf("Email '%s' is already registered in the database.", recipientAddEmail.Email)
 			}
 		}
-		return events.APIGatewayProxyResponse{
-			StatusCode:        400,
-			Body:               bodyMsg,
-		}, nil
+		return pkg.ErrorResponse(400, err, fmt.Sprintf("Unable to add item to table. Condition: %s", *expr.Condition()), bodyMsg), nil
 	}
 
 	logger.Info("Successfully added email to table")
-	return events.APIGatewayProxyResponse{Body: "", StatusCode: 204}, nil
+	return pkg.SuccessNoContentResponse(), nil
 }
-
 
 func main() {
 	log.SetOutput(os.Stdout)

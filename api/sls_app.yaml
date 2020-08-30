@@ -53,14 +53,14 @@ functions:
       - http:
           path: email
           method: post
-          cors:
-            origins:
-              - '${ssm:/news/prod/ClientDomain}'
-            headers:
-              - Content-Type
-              - Accept-Encoding
-              - X-Bearer-Token
-            allowCredentials: true
+          cors: true
+#            origins:
+#              - '${ssm:/news/prod/ClientDomain}'
+#            headers:
+#              - Content-Type
+#              - Accept-Encoding
+#              - X-Bearer-Token
+#            allowCredentials: true
   getemails:
     handler: bin/getemails
     description: 'Returns the recorded emails within the table'
@@ -69,6 +69,7 @@ functions:
       - http:
           path: getemails
           method: get
+          cors: true
 
 #plugins:
 #  - serverless-domain-manager
