@@ -1,18 +1,20 @@
 import { Injectable } from '@angular/core';
+import {Toast} from "./toast";
 
 @Injectable({
   providedIn: 'root'
 })
 export class ToastService {
 
-  messages: string[] = [];
+  messages: Toast[] = [];
 
   add(message: string) {
-    this.messages.push(message);
+    let toast = new Toast(message);
+    this.messages.push(toast);
   }
 
-  clear() {
-    this.messages = [];
+  clear(id: string) {
+    this.messages = this.messages.filter(toast => toast.id !== id);
   }
   constructor() { }
 }
