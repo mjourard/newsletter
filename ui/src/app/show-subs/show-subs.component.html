@@ -1,0 +1,28 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col">
+      <button type="button" (click)="listSubscribers()">refresh</button>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <table class="table">
+        <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Email</th>
+          <th scope="col">Added DT UTC</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let subscriber of subscribers; let i = index">
+          <th scope="row"></th>
+          <td>{{i}}</td>
+          <td>{{subscriber.email}}</td>
+          <td>{{subscriber.addedtsutc}}</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

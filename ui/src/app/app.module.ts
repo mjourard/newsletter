@@ -14,6 +14,9 @@ import { AboutUsComponent } from './about-us/about-us.component';
 import { ContactUsComponent } from './contact-us/contact-us.component';
 import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
 import { ToastComponent } from './toast/toast.component';
+import { CallToSubscribeComponent } from './call-to-subscribe/call-to-subscribe.component';
+import { ShowSubsComponent } from './show-subs/show-subs.component';
+import { NewsletterHighlightsComponent } from './newsletter-highlights/newsletter-highlights.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +28,10 @@ import { ToastComponent } from './toast/toast.component';
     AboutUsComponent,
     ContactUsComponent,
     PrivacyPolicyComponent,
-    ToastComponent
+    ToastComponent,
+    CallToSubscribeComponent,
+    ShowSubsComponent,
+    NewsletterHighlightsComponent
   ],
   imports: [
     BrowserModule,
