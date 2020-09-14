@@ -19,9 +19,9 @@
             <div class="form-group">
               <label for="exampleInputEmail1" class="sr-only">Email address</label>
               <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
-                     placeholder="email:">
+                     placeholder="email:" [(ngModel)]="newEmail" name="email">
             </div>
-            <button type="button" class="btn btn-primary ml-3">Subscribe!</button>
+            <button type="button" class="btn btn-primary ml-3" (click)="subscribe(newEmail)">Subscribe!</button>
           </form>
         </div>
       </div>
@@ -34,7 +34,7 @@
         <label for="call-to-subscribe-close" class="sr-only"> </label>
         <input id="call-to-subscribe-close" class="form-control" type="text" readonly
                placeholder="Show me more content first">
-        <button type="button" class="btn btn-danger">Skip</button>
+        <button type="button" class="btn btn-danger" (click)="collapse()" data-toggle="collapse" data-target="#collapse-call-to-action" aria-expanded="false">Skip</button>
       </form>
 
     </div>

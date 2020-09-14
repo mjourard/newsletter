@@ -1,11 +1,15 @@
-<div class="d-flex flex-wrap justify-content-around align-items-center align-content-around">
-  <div *ngFor="let newsletter of newsletters" class="card">
-    <div class="card-header">
-      {{newsletter.title}}
-    </div>
-    <img [src]="newsletter.img" alt="graph" class="card-img">
-    <div class="card-body">
-      <p class="card-text">{{newsletter.abstract}}</p>
+<div class="container-fluid">
+  <div class="row align-content-between align-items-center">
+    <div class="col-sm-12 col-lg-6" *ngFor="let newsletter of newsletters">
+      <div class="card">
+        <div class="card-header">
+          {{newsletter.title}}
+        </div>
+        <img [src]="newsletter.img" alt="graph" class="card-img">
+        <div class="card-body">
+          <p class="card-text">{{newsletter.abstract}}</p>
+        </div>
+      </div>
     </div>
   </div>
 </div>
