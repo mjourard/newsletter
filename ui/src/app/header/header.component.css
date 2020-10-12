@@ -1,0 +1,41 @@
+.mobile-header-container {
+  height: 100%;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  /* top layer */
+  z-index: 9999;
+  background-color: white;
+}
+
+.mobile-header-logo {
+  width: 50px;
+  height: auto;
+}
+
+
+/*.collapse {*/
+/*  visibility: hidden;*/
+/*}*/
+/*.collapse.show {*/
+/*  visibility: visible;*/
+/*  display: block;*/
+/*}*/
+.collapsing {
+  position: relative;
+  height: 0;
+  overflow: hidden;
+  -webkit-transition-property: height;
+  transition-property: height;
+  -webkit-transition-duration: 0.35s;
+  transition-duration: 0.35s;
+  -webkit-transition-timing-function: linear;
+  transition-timing-function: linear;
+}
+.collapsing.width {
+  -webkit-transition-property: width;
+  transition-property: width;
+  width: 0;
+  min-width: 0;
+  height: auto;
+}

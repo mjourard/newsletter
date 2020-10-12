@@ -4,6 +4,7 @@ import {Observable, of} from 'rxjs';
 import {ToastService} from "./toast.service";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {catchError, tap} from "rxjs/operators";
+import {LogService} from "./log.service";
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +21,8 @@ export class SubscriptionService {
 
   constructor(
     private http: HttpClient,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private logger: LogService
   ) {
   }
 
@@ -45,8 +47,7 @@ export class SubscriptionService {
 
   private handleError<T>(operation = 'operation', result?: T) {
     return (response: any): Observable<T> => {
-      // TODO: send the error to remote logging infrastructure
-      console.error(response); // log to console instead
+      this.logger.error(response); // log to console instead
       this.log(response.error.message);
       // Let the app keep running by returning an empty result.
       return of(result as T);

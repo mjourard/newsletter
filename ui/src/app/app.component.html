@@ -1,12 +1,11 @@
 <div class="d-flex flex-grow-1 flex-column justify-content-between" style="height: 100%;">
-  <app-header></app-header>
+  <app-header #headerComponent (mobileHeaderClicked)="mobileHeaderOpen()" (mobileHeaderClosed)="removeMobileOverlay()"></app-header>
   <div class="d-flex flex-grow-1 flex-column justify-content-start align-items-stretch">
     <div class="flex-grow-1">
       <router-outlet></router-outlet>
     </div>
     <app-toast></app-toast>
   </div>
-  <div class="flex-grow-4">
-    <app-footer></app-footer>
-  </div>
+  <app-footer></app-footer>
+  <div #mobileOverlay class="overlay" (click)="mobileHeaderClose()"></div>
 </div>

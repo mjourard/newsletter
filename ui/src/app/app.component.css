@@ -1,0 +1,22 @@
+.overlay {
+  display: none;
+  position: fixed;
+  /* full screen */
+  width: 100vw;
+  height: 100%;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  /* transparent black */
+  background: rgba(0, 0, 0, 0.7);
+  /* middle layer, i.e. appears below the sidebar */
+  z-index: 998;
+  opacity: 1;
+  /* animate the transition */
+  /*transition: all 0.5s ease-in-out;*/
+}
+/* display .overlay when it has the .active class */
+.overlay.active {
+  display: block;
+  opacity: 1;
+}
