@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {SubscriptionService} from "../subscription.service";
 import {ToastService} from "../toast.service";
 
@@ -15,11 +15,13 @@ export class CallToSubscribeComponent implements OnInit {
   ) {
   }
 
+  @Output() hideCallToSubscribe = new EventEmitter();
+
   ngOnInit(): void {
   }
 
   collapse() {
-    //TODO: have this call a function from the home component for proper separation
+    this.hideCallToSubscribe.emit();
   }
 
   subscribe(email: string): void {
@@ -29,6 +31,7 @@ export class CallToSubscribeComponent implements OnInit {
     }
     this.subscriptionService.subscribeEmail(email).subscribe(message => {
       this.toastService.add(message);
+      this.hideCallToSubscribe.emit();
     });
   }
 
