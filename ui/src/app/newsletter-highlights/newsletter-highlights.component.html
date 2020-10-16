@@ -1,15 +1,14 @@
-<div class="container-fluid">
-  <div class="row align-content-between align-items-center pt-3">
-    <div class="col-sm-12 col-lg-6" *ngFor="let newsletter of newsletters">
-      <div class="card">
-        <div class="card-header">
-          {{newsletter.title}}
-        </div>
-        <img [src]="newsletter.img" alt="graph" class="card-img">
-        <div class="card-body">
-          <p class="card-text">{{newsletter.abstract}}</p>
-        </div>
+<div class="grid-container pt-3 w-90 overflow-y-scroll">
+  <div class="grid-item" *ngFor="let newsletter of newsletters">
+    <div class="card h-100">
+      <div class="card-header">
+        {{newsletter.title}}
+      </div>
+      <img [src]="newsletter.img" alt="graph" class="card-img">
+      <div class="card-body">
+        <p class="card-text">{{newsletter.abstract}}</p>
       </div>
     </div>
   </div>
 </div>
+
