@@ -1,10 +1,9 @@
 <div class="d-flex flex-grow-1 flex-column justify-content-between" style="height: 100%;">
-  <app-header #headerComponent (mobileHeaderClicked)="mobileHeaderOpen()" (mobileHeaderClosed)="removeMobileOverlay()"></app-header>
-  <div class="d-flex flex-grow-1 flex-column justify-content-start align-items-stretch">
-    <div class="flex-grow-1">
-      <router-outlet></router-outlet>
-    </div>
+  <app-header #headerComponent (mobileHeaderClicked)="mobileHeaderOpen()"
+              (mobileHeaderClosed)="removeMobileOverlay()"></app-header>
+  <div class="d-flex flex-column justify-content-start align-items-stretch overflow-y-scroll">
     <app-toast></app-toast>
+    <router-outlet></router-outlet>
   </div>
   <app-footer></app-footer>
   <div #mobileOverlay class="overlay" (click)="mobileHeaderClose()"></div>
