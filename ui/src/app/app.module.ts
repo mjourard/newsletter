@@ -17,6 +17,7 @@ import { ToastComponent } from './toast/toast.component';
 import { CallToSubscribeComponent } from './call-to-subscribe/call-to-subscribe.component';
 import { ShowSubsComponent } from './show-subs/show-subs.component';
 import { NewsletterHighlightsComponent } from './newsletter-highlights/newsletter-highlights.component';
+import { HeaderSubscribeComponent } from './header-subscribe/header-subscribe.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import { NewsletterHighlightsComponent } from './newsletter-highlights/newslette
     ToastComponent,
     CallToSubscribeComponent,
     ShowSubsComponent,
-    NewsletterHighlightsComponent
+    NewsletterHighlightsComponent,
+    HeaderSubscribeComponent
   ],
   imports: [
     BrowserModule,

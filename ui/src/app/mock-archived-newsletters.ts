@@ -22,14 +22,14 @@ export const NEWSLETTERS: ArchivedNewsletter[] = [
     abstract: "The fish listened intently to what the frogs had to say. He didn't understand why the bird wanted to ride the bicycle."
   },
   {
-    title: "It would have been a better night if the guys next to us weren't in the splash zone.",
+    title: "It would have been a better night if the guys next to us weren't screaming like monkeys.",
     img: "/assets/mock-graphs/graph5.png",
     abstract: "People who insist on picking their teeth with their elbows are so annoying! They're playing the piano while flying in the plane."
   },
   {
     title: "We have never been to Asia, nor have we visited Africa.",
     img: "/assets/mock-graphs/graph6.png",
-    abstract: "The tour bus was packed with teenage girls heading toward their next adventure. The tortoise jumped into the lake with dreams of becoming a sea turtle."
+    abstract: "The tour bus was packed with teenagers heading toward their next adventure. The tortoise jumped into the lake with dreams of becoming a sea turtle."
   },
   {
     title: "They did nothing as the raccoon attacked the lady’s bag of food",

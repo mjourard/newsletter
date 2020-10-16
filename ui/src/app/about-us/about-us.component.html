@@ -1,1 +1,22 @@
-<p>about-us works!</p>
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <table class="table">
+        <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">email</th>
+          <th scope="col">Added UTC</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let subscriber of subscribers; index as i">
+          <th scope="row">{{i+1}}</th>
+          <td>{{subscriber.email}}</td>
+          <td>{{subscriber.addedtsutc}}</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

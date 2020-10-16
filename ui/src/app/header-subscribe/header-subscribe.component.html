@@ -1,0 +1,9 @@
+<form class="form-inline">
+  <div class="form-group">
+    <label for="lg-header-subscribe-email" class="sr-only">Email</label>
+    <input id="lg-header-subscribe-email" type="email" class="form-control" aria-describedby="emailHelp"
+           placeholder="Enter email" name="email" [(ngModel)]="newEmail">
+  </div>
+  <button type="button" class="btn btn-secondary" (click)="subscribe(newEmail)">Subscribe</button>
+  <img class="header-img bg-transparent d-none" [src]="loadingAnimationSrc" alt="loading-animation" #loadingAnimation>
+</form>

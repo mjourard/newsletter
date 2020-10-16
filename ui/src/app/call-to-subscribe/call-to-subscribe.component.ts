@@ -1,6 +1,7 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {SubscriptionService} from "../subscription.service";
 import {ToastService} from "../toast.service";
+import {AppConstants} from "../app-constants";
 
 @Component({
   selector: 'app-call-to-subscribe',
@@ -9,10 +10,12 @@ import {ToastService} from "../toast.service";
 })
 export class CallToSubscribeComponent implements OnInit {
   newEmail: string;
+  loadingAnimation: string;
   constructor(
     private subscriptionService: SubscriptionService,
     private toastService: ToastService
   ) {
+    this.loadingAnimation = AppConstants.LOADING_ANIMATION;
   }
 
   @Output() hideCallToSubscribe = new EventEmitter();
@@ -29,9 +32,13 @@ export class CallToSubscribeComponent implements OnInit {
     if (!email) {
       return;
     }
-    this.subscriptionService.subscribeEmail(email).subscribe(message => {
-      this.toastService.add(message);
-      this.hideCallToSubscribe.emit();
+    this.subscriptionService.subscribeEmail(email).subscribe(opResult => {
+      if (opResult.success) {
+        this.toastService.success(opResult.message);
+        this.hideCallToSubscribe.emit();
+      } else {
+        this.toastService.error(opResult.message);
+      }
     });
   }
 

@@ -37,3 +37,8 @@ body {
 .overflow-y-scroll {
   overflow-y: scroll;
 }
+
+.header-img {
+  max-height: 38px;
+  width: auto;
+}

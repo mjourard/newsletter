@@ -1,29 +1,15 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-primary">
-  <div class="container flex-nowrap justify-content-start d-none d-lg-flex">
-    <a class="navbar-brand w-25" routerLink="home" routerLinkActive="active">
-      <img src="/assets/logo.jpeg" class="img-fluid img-thumbnail" alt="brand image">
+  <div class="container-fluid flex-nowrap justify-content-start d-none d-lg-flex">
+    <a class="navbar-brand" routerLink="home" routerLinkActive="active">
+      <img src="/assets/logo.jpeg" class="header-img img-thumbnail" alt="brand image">
     </a>
-    <form class="form-inline">
-      <div class="form-group">
-        <label for="lg-header-subscribe-email" class="sr-only">Email</label>
-        <input id="lg-header-subscribe-email" type="email" class="form-control" aria-describedby="emailHelp"
-               placeholder="Enter email" name="email" [(ngModel)]="newEmail">
-      </div>
-      <button type="button" class="btn btn-secondary" (click)="subscribe(newEmail)">Subscribe</button>
-    </form>
+    <app-header-subscribe></app-header-subscribe>
   </div>
   <div class="container flex-nowrap justify-content-between d-flex d-lg-none">
     <a class="navbar-brand" routerLink="home" routerLinkActive="active">
       <img src="/assets/icon-logo.png" class="mobile-header-logo" alt="brand image">
     </a>
-    <form class="form-inline d-none d-sm-flex">
-      <div class="form-group">
-        <label for="md-header-subscribe-email" class="sr-only">Email</label>
-        <input id="md-header-subscribe-email" type="email" class="form-control" aria-describedby="emailHelp"
-               placeholder="Enter email" name="email" [(ngModel)]="newEmail">
-      </div>
-      <button type="button" class="btn btn-secondary" (click)="subscribe(newEmail)">Subscribe</button>
-    </form>
+    <app-header-subscribe class="d-none d-sm-flex"></app-header-subscribe>
     <button class="navbar-toggler bg-light" type="button" data-toggle="collapse"
             data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false"
             aria-label="Toggle navigation"
