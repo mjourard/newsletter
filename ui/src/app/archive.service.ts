@@ -4,14 +4,14 @@ import {ToastService} from "./toast.service";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {ArchivedNewsletter} from "./archived-newsletter";
 import {NEWSLETTERS} from "./mock-archived-newsletters";
+import {EnvService} from "./env.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class ArchiveService {
 
-  private baseUrl = 'https://du7hl2x8w2.execute-api.us-east-1.amazonaws.com/dev';
-  private listArchivedEntriesUrl = this.baseUrl + '/archivedentries';
+  private listArchivedEntriesUrl = this.env.apiUrl + '/archivedentries';
 
   private httpOptions = {
     headers: new HttpHeaders({'Content-Type': 'application/json'})
@@ -19,7 +19,8 @@ export class ArchiveService {
 
   constructor(
     private http: HttpClient,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private env: EnvService
   ) {
   }
 

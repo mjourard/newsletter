@@ -1,3 +1,12 @@
 .call-to-subscribe-container {
-  z-index: 50;
+  max-width: 520px;
+}
+@media (min-width:768px) {
+  .rounded-circle-md-bottom-right {
+    border-bottom-right-radius: 20%;
+  }
+
+  .rounded-circle-md-top-right {
+    border-top-right-radius: 20%;
+  }
 }

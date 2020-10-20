@@ -1,12 +1,7 @@
-<div class="container-fluid">
-  <div class="row">
-    <div class="col-sm-12 col-md-12 col-lg-6 bg-secondary" #callToSubscribeParent>
-      <div class="collapse show width" id="collapse-call-to-action">
-        <app-call-to-subscribe (hideCallToSubscribe)="hideCallToSubscribe()"></app-call-to-subscribe>
-      </div>
-    </div>
-    <div class="col bg-secondary">
-      <app-newsletter-highlights></app-newsletter-highlights>
-    </div>
+<button class="bg-danger d-none" (click)="showCallToSubscribe()" #showCallToSubscribeBtn>Show</button>
+<div class="w-100 h-100 layered-md p-1 bg-secondary">
+  <div class="collapse show width z-50" id="collapse-call-to-action" #callToSubscribeContainer>
+    <app-call-to-subscribe (hideCallToSubscribe)="hideCallToSubscribe()"></app-call-to-subscribe>
   </div>
+  <app-newsletter-highlights></app-newsletter-highlights>
 </div>

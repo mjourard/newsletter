@@ -6,15 +6,15 @@ import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {catchError, map, tap} from "rxjs/operators";
 import {LogService} from "./log.service";
 import {OpResult} from "./op-result";
+import {EnvService} from "./env.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class SubscriptionService {
 
-  private baseUrl = 'https://du7hl2x8w2.execute-api.us-east-1.amazonaws.com/dev';
-  private listSubsUrl = this.baseUrl + '/getemails';
-  private subscribeEmailUrl = this.baseUrl + '/email';
+  private listSubsUrl = this.env.apiUrl + '/getemails';
+  private subscribeEmailUrl = this.env.apiUrl + '/email';
 
   private httpOptions = {
     headers: new HttpHeaders({'Content-Type': 'application/json'})
@@ -23,7 +23,8 @@ export class SubscriptionService {
   constructor(
     private http: HttpClient,
     private toastService: ToastService,
-    private logger: LogService
+    private logger: LogService,
+    private env: EnvService
   ) {
   }
 

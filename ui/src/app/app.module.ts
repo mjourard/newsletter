@@ -1,5 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { EnvServiceProvider } from "./env.service.provider";
 
 import { AppRoutingModule } from './app-routing.module';
 import { FormsModule } from "@angular/forms";
@@ -18,6 +19,10 @@ import { CallToSubscribeComponent } from './call-to-subscribe/call-to-subscribe.
 import { ShowSubsComponent } from './show-subs/show-subs.component';
 import { NewsletterHighlightsComponent } from './newsletter-highlights/newsletter-highlights.component';
 import { HeaderSubscribeComponent } from './header-subscribe/header-subscribe.component';
+import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
+
+//fontawesome imports - different file probably
+import {faTimes} from "@fortawesome/free-solid-svg-icons";
 
 @NgModule({
   declarations: [
@@ -42,8 +47,13 @@ import { HeaderSubscribeComponent } from './header-subscribe/header-subscribe.co
     BrowserAnimationsModule,
     FormsModule,
     HttpClientModule,
+    FontAwesomeModule,
   ],
-  providers: [],
+  providers: [EnvServiceProvider],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+  constructor(private library: FaIconLibrary) {
+    library.addIcons(faTimes);
+  }
+}

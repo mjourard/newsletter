@@ -29,3 +29,10 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 ## Notes
 #### 2020-10-12
 * enabled console.log for development by changing **true** to **false** in the **no-console** section of *tslint.json*
+
+#### 2020-10-16
+* Add NG_DEPLOY_AWS_ACCESS_KEY_ID and NG_DEPLOY_AWS_SECRET_ACCESS_KEY to your environment variables for deployment
+
+#### 2020-10-20
+* Added an env service that will load in an **env.js** file from the `src/` folder, as well as an **env.js.dist** file 
+that can be copied to **env.js** and prod will use those values. Values here will be different for each person deploying/environment  

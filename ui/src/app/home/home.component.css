@@ -1,0 +1,23 @@
+@media (min-width: 768px) {
+  .layered-md {
+    display: grid;
+
+    /* Set horizontal alignment of items in, case they have a diffrent width. */
+    /* justify-items: start | end | center | stretch (default);*/
+    justify-items: stretch;
+
+    /* Set vertical alignment of items, in case they have a diffrent height. */
+    /* align-items: start | end | center | stretch (default); */
+    align-items: stretch;
+  }
+
+  .layered-md > * {
+    grid-column-start: 1;
+    grid-row-start: 1;
+  }
+}
+
+.cta-container-lg {
+  top: 0;
+  left: 0;
+}

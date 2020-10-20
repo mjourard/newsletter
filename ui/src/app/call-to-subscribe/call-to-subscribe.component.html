@@ -1,44 +1,28 @@
-<div class="container call-to-subscribe-container">
-  <div class="row pt-3">
-    <div class="col-md-9 col-sm-12">
-      <div class="card text-center border-primary rounded-top h-100">
-        <div class="card-header">
-          <h2 class="card-title">Charts Tell Stories</h2>
-        </div>
-        <div class="card-body">
-          <p class="card-text display-6">
-            Get the latest news in the industry told through eye-popping charts and graphs.
-          </p>
-        </div>
-        <div class="card-footer">
-          <form class="form-inline justify-content-between">
-            <div class="form-group flex-grow-1">
-              <label for="exampleInputEmail1" class="sr-only">Email address</label>
-              <input type="email" class="form-control flex-grow-1" id="exampleInputEmail1" aria-describedby="emailHelp"
-                     placeholder="email" [(ngModel)]="newEmail" name="email">
-            </div>
-            <button type="button" class="btn btn-primary ml-md-3" (click)="subscribe(newEmail)">Subscribe!</button>
-            <button type="button" class="btn btn-danger d-inline-block d-md-none" (click)="collapse()"
-                    aria-expanded="false">Skip Signup</button>
-          </form>
-        </div>
-      </div>
+<div class="call-to-subscribe-container bg-warning rounded-circle-md-bottom-right rounded-circle-md-top-right pt-md-5 pb-md-5 pr-md-5">
+  <div class="card text-center border-primary rounded-top h-100">
+    <div class="card-header">
+      <span class="card-title display-5">Charts Tell Stories</span>
+      <button class="btn bg-transparent border-danger float-md-right d-none d-md-block" (click)="collapse()">
+        <fa-icon [icon]="['fas','times']"></fa-icon>
+      </button>
     </div>
-    <div class="col-md-3 d-none d-md-block align-items-md-center">
-      <div class="card text-center border-primary h-100">
-        <div class="card-header">
-          <h2 class="card-title">Hide</h2>
+    <div class="card-body">
+      <p class="card-text display-6">
+        Get the latest news in the industry told through eye-popping charts and graphs.
+      </p>
+    </div>
+    <div class="card-footer">
+      <form class="form-inline justify-content-between">
+        <div class="form-group flex-grow-1">
+          <label for="exampleInputEmail1" class="sr-only">Email address</label>
+          <input type="email" class="form-control flex-grow-1" id="exampleInputEmail1" aria-describedby="emailHelp"
+                 placeholder="email" [(ngModel)]="newEmail" name="email">
         </div>
-        <div class="card-body text-left">
-          <p class="card-text p-0">
-            Skip signup, show me content.
-          </p>
-        </div>
-        <div class="card-footer">
-          <button type="button" class="btn btn-danger" (click)="collapse()"
-                  aria-expanded="false">Skip Signup</button>
-        </div>
-      </div>
+        <button type="button" class="btn btn-primary ml-md-3" (click)="subscribe(newEmail)">Subscribe!</button>
+        <button type="button" class="btn btn-danger d-inline-block d-md-none" (click)="collapse()"
+                aria-expanded="false">Skip Signup
+        </button>
+      </form>
     </div>
   </div>
 </div>
