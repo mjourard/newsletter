@@ -26,6 +26,11 @@ Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protrac
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
 
+## Icons
+* Get icons from [fontawesome.com](https://fontawesome.com/icons)
+  * select from *free*,*solid*,*regular* and *brands
+  * remove the **fa-** from the start when adding it to the `[icons]` directive
+
 ## Notes
 #### 2020-10-12
 * enabled console.log for development by changing **true** to **false** in the **no-console** section of *tslint.json*

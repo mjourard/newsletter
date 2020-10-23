@@ -1,11 +1,16 @@
 <div class="grid-container pt-3 w-90 overflow-y-scroll">
   <div class="grid-item" *ngFor="let newsletter of newsletters">
     <div class="card h-100">
-      <div class="card-header">
-        {{newsletter.title}}
+      <div class="card-header preview-card-header">
+        <h5>{{newsletter.title}}</h5>
       </div>
-      <img [src]="newsletter.img" alt="graph" class="card-img">
-      <div class="card-body">
+      <div class="preview-card-chart-container">
+        <img [src]="newsletter.img" alt="graph" class="card-img h-100">
+        <button type="button" class="btn btn-primary rounded-circle read-more-btn">
+          <fa-icon [icon]="['fas','angle-double-right']"></fa-icon>
+        </button>
+      </div>
+      <div class="card-body preview-card-body">
         <p class="card-text">{{newsletter.abstract}}</p>
       </div>
     </div>

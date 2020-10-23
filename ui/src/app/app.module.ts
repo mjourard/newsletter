@@ -22,7 +22,7 @@ import { HeaderSubscribeComponent } from './header-subscribe/header-subscribe.co
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 
 //fontawesome imports - different file probably
-import {faTimes} from "@fortawesome/free-solid-svg-icons";
+import {faAngleDoubleRight, faTimes} from "@fortawesome/free-solid-svg-icons";
 
 @NgModule({
   declarations: [
@@ -54,6 +54,6 @@ import {faTimes} from "@fortawesome/free-solid-svg-icons";
 })
 export class AppModule {
   constructor(private library: FaIconLibrary) {
-    library.addIcons(faTimes);
+    library.addIcons(faTimes, faAngleDoubleRight);
   }
 }
