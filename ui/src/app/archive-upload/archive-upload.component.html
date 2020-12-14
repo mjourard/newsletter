@@ -1,0 +1,65 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-6 mx-auto">
+      {{diagnostic}}
+    </div>
+  </div>
+  <div class="row" [hidden]="submitted">
+    <div class="col-sm-12 col-md-6 mx-auto">
+      <form (ngSubmit)="onSubmit(archiveUploadForm)" #archiveUploadForm="ngForm">
+        <div class="form-group">
+          <label for="uploadInputAuthor">Author</label>
+          <select class="form-control" id="uploadInputAuthor" required [(ngModel)]="article.author" name="author">
+            <option *ngFor="let author of authors" [value]="author">{{author}}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="uploadInputTitle">Title</label>
+          <input type="text" class="form-control" id="uploadInputTitle" aria-describedby="titleHelp"
+                 placeholder="Enter article title" required [(ngModel)]="article.title" name="title">
+          <small id="titleHelp" class="form-text text-muted">Enter the title of the article.</small>
+        </div>
+        <div class="form-group">
+          <label for="uploadInputAbstract">Abstract</label>
+          <input type="text" class="form-control" id="uploadInputAbstract" placeholder="Enter article abstract"
+                 aria-describedby="abstractHelp" required [(ngModel)]="article.abstract" name="abstract">
+          <small id="abstractHelp" class="form-text text-muted">The abstract is a short summary of the article that is
+            displayed in the gallery designed to hook the reader.</small>
+        </div>
+        <div class="form-group">
+          <input type="file" class="form-control-file" id="uploadInputImage" required
+                 name="image" (change)="fileSelected($event.target.files)" accept="image/*" #fileInput style="display: none;">
+          <button class="btn btn-primary" type="button" (click)="fileInput.click()">Select Article Image</button>
+        </div>
+        <div class="form-group">
+          <span class="d-block">Preview Image</span>
+            <img id="uploadInputImagePreview" alt="A preview image" class="border-dark border preview-image" src="" [src]="article.img">
+        </div>
+        <button type="submit" class="btn btn-primary" [disabled]="!archiveUploadForm.form.valid">Submit</button>
+      </form>
+    </div>
+  </div>
+  <div class="row" [hidden]="!submitted">
+    <div class="col-6 mx-auto">
+      <h2>You submitted:</h2>
+      <div class="row">
+        <div class="col-xs-3">Author</div>
+        <div class="col-xs-9">{{ article.author }}</div>
+      </div>
+      <div class="row">
+        <div class="col-xs-3">Title</div>
+        <div class="col-xs-9">{{ article.title }}</div>
+      </div>
+      <div class="row">
+        <div class="col-xs-3">Abstract</div>
+        <div class="col-xs-9">{{ article.abstract }}</div>
+      </div>
+      <div class="row">
+        <div class="col-xs-3">Image</div>
+        <div class="col-xs-9">{{ article.img }}</div>
+      </div>
+      <br>
+      <button class="btn btn-primary" (click)="submitted=false">Edit</button>
+    </div>
+  </div>
+</div>

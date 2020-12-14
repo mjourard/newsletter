@@ -1,0 +1,23 @@
+# a test deployment file for adding new resources.
+# remove the .dist from the end and deploy it like normal
+service: newsletter-api-test-deploy
+
+frameworkVersion: '>=1.28.0 <2.0.0'
+
+package:
+  exclude:
+    - ./**
+provider:
+  name: aws
+  region: us-east-1
+  runtime: go1.x
+custom:
+  CUSTOM_RESOURCE_NAME: custom-name-${self:provider.stage}
+resources:
+  Resources:
+    TestResource: ${file(./resource/EmailSignupsDynamo.yaml)}
+  Outputs:
+    TestResourceName:
+      Value: !Ref TestResource
+      Export:
+        Name: !Join [ "-", [ !Ref "AWS::StackName", TestResourceName ] ]

@@ -10,12 +10,25 @@ provider:
   region: us-east-1
   runtime: go1.x
 custom:
-  DYNAMO_TABLE: email-signups-${self:provider.stage}
+  DYNAMO_TABLE_EMAIL_SIGNUPS: email-signups-${self:provider.stage}
+  DYNAMO_TABLE_ARTICLE_ARCHIVES: article-archives-${self:provider.stage}
+  S3_BUCKET_ARTICLE_ASSETS: ${self:service}-article-assets-${self:provider.stage}
 resources:
+  Description: Resources containing data for the newsletter project
   Resources:
     Recipients: ${file(./resource/EmailSignupsDynamo.yaml)}
+    Archives: ${file(./resource/ArticleArchivesDynamo.yaml)}
+    ArticleAssets: ${file(./resource/ArticleAssetsS3.yaml)}
   Outputs:
     RecipientTableName:
       Value: !Ref Recipients
       Export:
         Name: !Join [ "-", [ !Ref "AWS::StackName", RecipientTableName ] ]
+    ArticleArchivesTableName:
+      Value: !Ref Archives
+      Export:
+        Name: !Join [ "-", [ !Ref "AWS::StackName", ArticleArchivesTableName ] ]
+    ArticleAssetsBucketName:
+      Value: !Ref ArticleAssets
+      Export:
+        Name: !Join [ "-", [ !Ref "AWS::StackName", ArticleAssetsBucketName ] ]

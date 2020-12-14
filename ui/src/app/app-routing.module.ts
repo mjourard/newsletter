@@ -6,6 +6,8 @@ import { FaqComponent } from "./faq/faq.component";
 import { PrivacyPolicyComponent } from "./privacy-policy/privacy-policy.component";
 import { HomeComponent } from "./home/home.component";
 import {ShowSubsComponent} from "./show-subs/show-subs.component";
+import {ArchiveUploadComponent} from "./archive-upload/archive-upload.component";
+import {AdminHomeComponent} from "./admin-home/admin-home.component";
 
 const routes: Routes = [
   { path: 'about-us', component: AboutUsComponent},
@@ -13,7 +15,9 @@ const routes: Routes = [
   { path: 'faq', component: FaqComponent},
   { path: 'privacy-policy', component: PrivacyPolicyComponent},
   { path: 'home', component: HomeComponent},
-  { path: 'subs', component: ShowSubsComponent},
+  { path: 'admin', component: AdminHomeComponent},
+  { path: 'admin/subs', component: ShowSubsComponent},
+  { path: 'admin/archive/upload', component: ArchiveUploadComponent},
   { path: '', redirectTo: '/home', pathMatch: 'full'}
 ];
 

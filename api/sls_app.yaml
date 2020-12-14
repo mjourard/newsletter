@@ -22,15 +22,25 @@ provider:
       Action:
         - ses:*
       Resource: "*"
+    - Effect: Allow
+      Action:
+        - s3:*
+      Resource:
+        - !Join [ "", [ "arn:aws:s3:::",  '${self:custom.S3_BUCKET_ARTICLE_ASSETS}' ] ]
+        - !Join [ "", [ "arn:aws:s3:::",  '${self:custom.S3_BUCKET_ARTICLE_ASSETS}', "/*" ] ]
 
 # you can define service wide environment variables here
   environment:
-    DYNAMO_TABLE: ${self:custom.DYNAMO_TABLE}
+    DYNAMO_TABLE_RECIPIENTS: ${self:custom.DYNAMO_TABLE_RECIPIENTS}
+    DYNAMO_TABLE_ARTICLE_ARCHIVE: ${self:custom.DYNAMO_TABLE_ARTICLE_ARCHIVE}
+    S3_BUCKET_ARTICLE_ASSETS: ${self:custom.S3_BUCKET_ARTICLE_ASSETS}
     ENV_DEPLOYMENT: ${self:provider.stage}
 
 custom:
   PERSIST_STACK_NAME: newsletter-api-data-persistence
-  DYNAMO_TABLE: ${cf:${self:custom.PERSIST_STACK_NAME}-${self:provider.stage}.RecipientTableName}
+  DYNAMO_TABLE_RECIPIENTS: ${cf:${self:custom.PERSIST_STACK_NAME}-${self:provider.stage}.RecipientTableName}
+  DYNAMO_TABLE_ARTICLE_ARCHIVE: ${cf:${self:custom.PERSIST_STACK_NAME}-${self:provider.stage}.ArticleArchivesTableName}
+  S3_BUCKET_ARTICLE_ASSETS: ${cf:${self:custom.PERSIST_STACK_NAME}-${self:provider.stage}.ArticleAssetsBucketName}
   customDomain:
     domainName: api.oyster.io
     basePath: ''
@@ -70,12 +80,22 @@ functions:
           path: getemails
           method: get
           cors: true
+  addarchivedarticle:
+    handler: bin/addarchivedarticle
+    description: 'Adds the preview data of the articles to the article archive'
+    timeout: 15
+    events:
+      - http:
+          path: archivedarticle
+          method: post
+          cors: true
 
 #plugins:
 #  - serverless-domain-manager
 
 # you can add CloudFormation resource templates here
-# resources:
+resources:
+  Description: The stateless api of the newsletter project
 #   Resources:
 #     CloudfrontOAI:
 #       Type: 'AWS::CloudFront::CloudFrontOriginAccessIdentity'

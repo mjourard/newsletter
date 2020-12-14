@@ -1,0 +1,15 @@
+Type: 'AWS::S3::Bucket'
+DeletionPolicy: Retain
+Properties:
+  AccelerateConfiguration:
+    AccelerationStatus: Suspended
+  AccessControl: BucketOwnerFullControl
+  ObjectLockEnabled: false
+  BucketName: ${self:custom.S3_BUCKET_ARTICLE_ASSETS}
+  PublicAccessBlockConfiguration:
+    BlockPublicAcls: true
+    BlockPublicPolicy: true
+    IgnorePublicAcls: true
+    RestrictPublicBuckets: true
+  VersioningConfiguration:
+    Status: Suspended

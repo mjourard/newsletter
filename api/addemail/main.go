@@ -13,7 +13,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"github.com/aws/aws-sdk-go/service/dynamodb/expression"
 	"github.com/mjourard/newsletter/api/pkg"
-	log "github.com/sirupsen/logrus"
 	"os"
 	"time"
 )
@@ -73,7 +72,7 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 	// Create item in table Movies
 	input := &dynamodb.PutItemInput{
 		Item:                     av,
-		TableName:                aws.String(os.Getenv(pkg.EnvTable)),
+		TableName:                aws.String(os.Getenv(pkg.EnvTableRecipients)),
 		ConditionExpression:      expr.Condition(),
 		ExpressionAttributeNames: expr.Names(),
 	}
@@ -97,8 +96,5 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 }
 
 func main() {
-	log.SetOutput(os.Stdout)
-	//TODO: set log output level -
-	log.SetLevel(log.DebugLevel)
 	lambda.Start(Handler)
 }

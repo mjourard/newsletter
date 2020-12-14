@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { EnvServiceProvider } from "./env.service.provider";
 
 import { AppRoutingModule } from './app-routing.module';
-import { FormsModule } from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import { HttpClientModule } from "@angular/common/http";
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header.component';
@@ -23,6 +23,8 @@ import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontaweso
 
 //fontawesome imports - different file probably
 import {faAngleDoubleRight, faTimes} from "@fortawesome/free-solid-svg-icons";
+import { ArchiveUploadComponent } from './archive-upload/archive-upload.component';
+import { AdminHomeComponent } from './admin-home/admin-home.component';
 
 @NgModule({
   declarations: [
@@ -38,16 +40,19 @@ import {faAngleDoubleRight, faTimes} from "@fortawesome/free-solid-svg-icons";
     CallToSubscribeComponent,
     ShowSubsComponent,
     NewsletterHighlightsComponent,
-    HeaderSubscribeComponent
+    HeaderSubscribeComponent,
+    ArchiveUploadComponent,
+    AdminHomeComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     NoopAnimationsModule,
     BrowserAnimationsModule,
-    FormsModule,
     HttpClientModule,
     FontAwesomeModule,
+    FormsModule,
+    ReactiveFormsModule,
   ],
   providers: [EnvServiceProvider],
   bootstrap: [AppComponent]

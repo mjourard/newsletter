@@ -51,7 +51,7 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 		Limit:                    aws.Int64(500),
 		ExpressionAttributeNames: expr.Names(),
 		ProjectionExpression:     expr.Projection(),
-		TableName:                aws.String(os.Getenv(pkg.EnvTable)),
+		TableName:                aws.String(os.Getenv(pkg.EnvTableRecipients)),
 	})
 
 	if err != nil {
