@@ -25,7 +25,19 @@ export class ArchiveUploadComponent implements OnInit {
     }
   }
 
-  get diagnostic() { return JSON.stringify(this.article); }
+  get diagnostic() {
+    let imgShort = this.article.img;
+    imgShort = imgShort.substr(0, 50);
+    if (this.article.img.length > 50) {
+      imgShort += '...';
+    }
+    return JSON.stringify({
+      abstract: this.article.abstract,
+      author: this.article.author,
+      title: this.article.title,
+      img: imgShort
+    });
+  }
 
   ngOnInit(): void {
   }

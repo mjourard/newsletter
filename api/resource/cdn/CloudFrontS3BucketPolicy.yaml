@@ -1,0 +1,15 @@
+Type: 'AWS::S3::BucketPolicy'
+Properties:
+  Bucket: ${self:custom.S3_BUCKET_ARTICLE_ASSETS}
+  PolicyDocument:
+    Version: '2008-10-17'
+    Id: PolicyForNewsCloudFrontPrivateContent
+    Statement:
+      - Sid: '1'
+        Effect: Allow
+        Principal:
+          AWS: !Join [' ', ['arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity', !Ref CloudfrontOAI ] ]
+        Action: s3:GetObject
+        Resource: !Join ['', ['arn:aws:s3:::', '${self:custom.S3_BUCKET_ARTICLE_ASSETS}', '/*' ] ]
+DependsOn:
+  - CloudfrontOAI

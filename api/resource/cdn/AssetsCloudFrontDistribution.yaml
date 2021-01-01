@@ -1,0 +1,52 @@
+Type: 'AWS::CloudFront::Distribution'
+Properties:
+  DistributionConfig:
+    Origins:
+      - DomainName: !Join ['.', ['${self:custom.S3_BUCKET_ARTICLE_ASSETS}', 's3.amazonaws.com'] ]
+        Id: NewsS3Origin
+        S3OriginConfig:
+          OriginAccessIdentity: !Join ['/', ['origin-access-identity/cloudfront', !Ref CloudfrontOAI ] ]
+    Enabled: 'true'
+    Comment: 'Newsletter article assets distribution'
+    DefaultRootObject: index.html
+#    Aliases:
+#      - www.guelphtrickoreat.ca
+#      - guelphtrickoreat.ca
+    DefaultCacheBehavior:
+      AllowedMethods:
+        - GET
+        - HEAD
+        - OPTIONS
+      TargetOriginId: NewsS3Origin
+      ForwardedValues:
+        QueryString: 'false'
+        Cookies:
+          Forward: none
+      ViewerProtocolPolicy: redirect-to-https
+    PriceClass: PriceClass_100
+    Restrictions:
+      GeoRestriction:
+        RestrictionType: whitelist
+        Locations:
+          - CA
+          - US
+          - AU # Australia
+          - BE # Belgium
+          - DK # Denmark
+          - DE # Germany
+          - IE # Ireland
+          - IL # Israel
+          - NZ # New Zealand
+          - NL # Netherlands
+          - CH # Switzerland
+          - IO # British Indian Ocean Territory
+          - IT # Italy
+          - JP # Japan
+          - MY # Malaysia
+    ViewerCertificate:
+#      MinimumProtocolVersion: TLSv1.1_2016
+#      SslSupportMethod: sni-only
+#      AcmCertificateArn: ${file(./account_config.yaml):ACMCertificateArn}
+      CloudFrontDefaultCertificate: true # set this to false when switching over to a proper domain
+DependsOn:
+  - CloudfrontOAI

@@ -35,12 +35,14 @@ provider:
     DYNAMO_TABLE_ARTICLE_ARCHIVE: ${self:custom.DYNAMO_TABLE_ARTICLE_ARCHIVE}
     S3_BUCKET_ARTICLE_ASSETS: ${self:custom.S3_BUCKET_ARTICLE_ASSETS}
     ENV_DEPLOYMENT: ${self:provider.stage}
+    CLOUDFRONT_URL: ${self:custom.CLOUDFRONT_URL}
 
 custom:
   PERSIST_STACK_NAME: newsletter-api-data-persistence
   DYNAMO_TABLE_RECIPIENTS: ${cf:${self:custom.PERSIST_STACK_NAME}-${self:provider.stage}.RecipientTableName}
   DYNAMO_TABLE_ARTICLE_ARCHIVE: ${cf:${self:custom.PERSIST_STACK_NAME}-${self:provider.stage}.ArticleArchivesTableName}
   S3_BUCKET_ARTICLE_ASSETS: ${cf:${self:custom.PERSIST_STACK_NAME}-${self:provider.stage}.ArticleAssetsBucketName}
+  CLOUDFRONT_URL: ${cf:${self:service}-${self:provider.stage}.CFDomain}
   customDomain:
     domainName: api.oyster.io
     basePath: ''
@@ -89,6 +91,15 @@ functions:
           path: archivedarticle
           method: post
           cors: true
+  getarticles:
+    handler: bin/getarticles
+    description: 'retrieves a list of archived articles from the dynamodb table'
+    timeout: 15
+    events:
+      - http:
+          path: archivedentries
+          method: get
+          cors: true
 
 #plugins:
 #  - serverless-domain-manager
@@ -96,88 +107,14 @@ functions:
 # you can add CloudFormation resource templates here
 resources:
   Description: The stateless api of the newsletter project
-#   Resources:
-#     CloudfrontOAI:
-#       Type: 'AWS::CloudFront::CloudFrontOriginAccessIdentity'
-#       Properties:
-#         CloudFrontOriginAccessIdentityConfig:
-#           Comment: static content for TOE
-#     WebsiteCDN:
-#       Type: 'AWS::CloudFront::Distribution'
-#       Properties:
-#         DistributionConfig:
-#           Origins:
-#           - DomainName: !Join ['.', ['${ssm:/toe/prod/CFBucketName}', 's3.amazonaws.com'] ]
-#             Id: ToeS3Origin
-#             S3OriginConfig:
-#               OriginAccessIdentity: !Join ['/', ['origin-access-identity/cloudfront', !Ref CloudfrontOAI ] ]
-#           Enabled: 'true'
-#           Comment: 'Trick or eat distribution'
-#           DefaultRootObject: index.html
-#           Aliases:
-#             - www.guelphtrickoreat.ca
-#             - guelphtrickoreat.ca
-#           DefaultCacheBehavior:
-#             AllowedMethods:
-#               - GET
-#               - HEAD
-#               - OPTIONS
-#             TargetOriginId: ToeS3Origin
-#             ForwardedValues:
-#               QueryString: 'false'
-#               Cookies:
-#                 Forward: none
-#             ViewerProtocolPolicy: redirect-to-https
-#           PriceClass: PriceClass_100
-#           Restrictions:
-#             GeoRestriction:
-#               RestrictionType: whitelist
-#               Locations:
-#                 - CA
-#                 - US
-#                 - AU # Australia
-#                 - BE # Belgium
-#                 - DK # Denmark
-#                 - DE # Germany
-#                 - IE # Ireland
-#                 - IL # Israel
-#                 - NZ # New Zealand
-#                 - NL # Netherlands
-#                 - CH # Switzerland
-#                 - IO # British Indian Ocean Territory
-#                 - IT # Italy
-#                 - JP # Japan
-#                 - MY # Malaysia
-#           ViewerCertificate:
-#             MinimumProtocolVersion: TLSv1.1_2016
-#             SslSupportMethod: sni-only
-#             AcmCertificateArn: ${file(./account_config.yaml):ACMCertificateArn}
-#       DependsOn:
-#         - CloudfrontOAI
-#     WebsiteDNSRecord:
-#       Type: 'AWS::Route53::RecordSet'
-#       Properties:
-#         HostedZoneName: !Join ['', [ '${ssm:/toe/prod/BaseDomain}', '.' ] ]
-#         AliasTarget:
-#           DNSName: !GetAtt WebsiteCDN.DomainName
-#           HostedZoneId: Z2FDTNDATAQYW2
-#         Name: guelphtrickoreat.ca.
-#         Type: A
-#       DependsOn:
-#         - WebsiteCDN
-#     CFBucketPolicyS3:
-#       Type: 'AWS::S3::BucketPolicy'
-#       Properties:
-#         Bucket: guelphtrickoreat.ca
-#         PolicyDocument:
-#           Version: '2008-10-17'
-#           Id: PolicyForTOECloudFrontPrivateContent
-#           Statement:
-#             - Sid: '1'
-#               Effect: Allow
-#               Principal:
-#                 AWS: !Join [' ', ['arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity', !Ref CloudfrontOAI ] ]
-#               Action: s3:GetObject
-#               Resource: !Join ['', ['arn:aws:s3:::', '${ssm:/toe/prod/CFBucketName}', '/*' ] ]
-#       DependsOn:
-#         - CloudfrontOAI
+  Resources:
+    CloudfrontOAI: ${file(./resource/cdn/AssetsOriginAccessIdentity.yaml)}
+    WebsiteCDN: ${file(./resource/cdn/AssetsCloudFrontDistribution.yaml)}
+#    WebsiteDNSRecord: ${file(./resource/cdn/CDNDNSRecord.yaml)}
+    CFBucketPolicyS3: ${file(./resource/cdn/CloudFrontS3BucketPolicy.yaml)}
+  Outputs:
+    CFDomain:
+      Value: { "Fn::GetAtt": [ WebsiteCDN, DomainName ] }
+      Export:
+        Name: !Join [ "-", [ !Ref "AWS::StackName", CFDomain ] ]
+

@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -10,9 +9,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
-	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
-	"github.com/aws/aws-sdk-go/service/dynamodb/expression"
 	"github.com/mjourard/newsletter/api/pkg"
+	"github.com/mjourard/newsletter/api/pkg/articlemanager"
 	"os"
 	"time"
 )
@@ -30,37 +28,27 @@ type AddArchivedArticle struct {
 	Author   string `json:"author"`
 }
 
-type ArchivesArchivedArticle struct {
-	Id             string `json:"id"`
-	Title          string `json:"title"`
-	Img            string `json:"img"`
-	Abstract       string `json:"abstract"`
-	Author         string `json:"author"`
-	AddedTimeStamp int64  `json:"addedts"`
-}
-
 // Handler is our lambda handler invoked by the `lambda.Start` function call
 func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	pkg.SetContext(ctx)
 	logger := pkg.GetLogger()
 	logger.Debugf("Received body: %s", request.Body)
 	sess, err := session.NewSession(&aws.Config{})
-	if appType, ok := request.Headers["content-type"]; !ok || appType != "application/json" {
-		return pkg.ErrorResponse(400, nil, "", "Request header 'content-type' was not 'application/json'"), nil
+	if errResp := pkg.VerifyRequestParameters(request); errResp != nil {
+		return *errResp, nil
 	}
 
-	// Create DynamoDB client
-	svc := dynamodb.New(sess)
+	articleManager := articlemanager.New(sess, aws.String(os.Getenv(pkg.EnvTableArticleArchive)), aws.String(os.Getenv(pkg.EnvCloudfrontURL)))
 
 	logger.Info("Decoding addarchivedarticle request")
 	var archivedArticle AddArchivedArticle
-	err = json.Unmarshal([]byte(request.Body), &archivedArticle)
-	if err != nil {
-		return pkg.ErrorResponse(400, err, "Unable to unmarshal request body into AddArchivedArticle struct", "Unable to decode JSON request"), nil
+	errResp := pkg.UnmarshalRequest(request, &archivedArticle)
+	if errResp != nil {
+		return *errResp, nil
 	}
 
 	//load the bucket from the environment
-	bucket := os.Getenv("S3_BUCKET_ARTICLE_ASSETS")
+	bucket := os.Getenv(pkg.EnvS3BucketArticleAssets)
 
 	//upload the image to S3
 	key, id, err := UploadToS3(sess, archivedArticle.Img, ContentTypeAutoDetect, bucket, PreviewContentPrefix)
@@ -69,7 +57,7 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 		return pkg.ErrorResponse(500, err, errMsg, errMsg), nil
 	}
 
-	archivesArchivedArticle := &ArchivesArchivedArticle{
+	archivesArchivedArticle := &articlemanager.ArchivesArchivedArticle{
 		Id:             id,
 		Title:          archivedArticle.Title,
 		Img:            key,
@@ -77,38 +65,17 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 		Author:         archivedArticle.Author,
 		AddedTimeStamp: time.Now().Unix(),
 	}
-	av, err := dynamodbattribute.MarshalMap(archivesArchivedArticle)
+	err = articleManager.AddNewArchivedArticle(archivesArchivedArticle, os.Getenv(pkg.EnvTableArticleArchive))
 
 	if err != nil {
-		return pkg.ErrorResponse(400, err, "Unable to marshal the ArchivesArchivedArticle struct into something usable for dynamodb", "Unable to convert addarchivearticle to a savable item"), nil
-	}
-
-	condition := expression.AttributeNotExists(expression.Name("id"))
-	expr, err := expression.NewBuilder().WithCondition(condition).Build()
-	if err != nil {
-		return pkg.ErrorResponse(400, err, "Unable to build conditional expression when adding article to archive", "Error while trying construct the putitem request to insert into the table"), nil
-	}
-
-	// Create item in table Movies
-	input := &dynamodb.PutItemInput{
-		Item:                     av,
-		TableName:                aws.String(os.Getenv(pkg.EnvTableArticleArchive)),
-		ConditionExpression:      expr.Condition(),
-		ExpressionAttributeNames: expr.Names(),
-	}
-
-	logger.Info("Adding article to archive table")
-	_, err = svc.PutItem(input)
-
-	if err != nil {
-		bodyMsg := "Error: unable to add article to archive database. Reason unknown."
+		bodyMsg := err.Error()
 		if awsErr, ok := err.(awserr.Error); ok {
 			switch awsErr.Code() {
 			case dynamodb.ErrCodeConditionalCheckFailedException:
-				bodyMsg = fmt.Sprintf("id '%s' is already registered in the database.", archivesArchivedArticle.Id)
+				bodyMsg = fmt.Sprintf("id '%s' is already registered in the database. Internal error: %s", archivesArchivedArticle.Id, err.Error())
 			}
 		}
-		return pkg.ErrorResponse(400, err, fmt.Sprintf("Unable to add item to table. Condition: %s", *expr.Condition()), bodyMsg), nil
+		return pkg.ErrorResponse(400, err, bodyMsg, "Unable to convert addarchivearticle to a savable item"), nil
 	}
 
 	logger.Info("Successfully added article to archive")

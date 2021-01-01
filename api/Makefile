@@ -5,6 +5,7 @@ build: gomodgen
 	env GOOS=linux go build -ldflags="-s -w" -o bin/addemail addemail/main.go
 	env GOOS=linux go build -ldflags="-s -w" -o bin/getemails getemails/main.go
 	env GOOS=linux go build -ldflags="-s -w" -o bin/addarchivedarticle addarchivedarticle/*.go
+	env GOOS=linux go build -ldflags="-s -w" -o bin/getarticles getarticles/*.go
 
 clean:
 	rm -rf ./bin ./vendor Gopkg.lock

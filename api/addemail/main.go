@@ -39,8 +39,8 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 	logger := pkg.GetLogger()
 	logger.Debugf("Received body: %s", request.Body)
 	sess, err := session.NewSession(&aws.Config{})
-	if appType, ok := request.Headers["content-type"]; !ok || appType != "application/json" {
-		return pkg.ErrorResponse(400, nil, "", "Request header 'content-type' was not 'application/json"), nil
+	if errResp := pkg.VerifyRequestParameters(request); errResp != nil {
+		return *errResp, nil
 	}
 
 	// Create DynamoDB client

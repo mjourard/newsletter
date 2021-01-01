@@ -32,6 +32,10 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 	logger := pkg.GetLogger()
 	var buf bytes.Buffer
 
+	if errResp := pkg.VerifyRequestParameters(request); errResp != nil {
+		return *errResp, nil
+	}
+
 	sess, err := session.NewSession(&aws.Config{})
 	svc := dynamodb.New(sess)
 
