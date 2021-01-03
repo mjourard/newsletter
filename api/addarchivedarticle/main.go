@@ -39,6 +39,7 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 	}
 
 	articleManager := articlemanager.New(sess, aws.String(os.Getenv(pkg.EnvTableArticleArchive)), aws.String(os.Getenv(pkg.EnvCloudfrontURL)))
+	assetsManager := articlemanager.NewAssetsManager(sess, aws.String(os.Getenv(pkg.EnvS3BucketArticleAssets)))
 
 	logger.Info("Decoding addarchivedarticle request")
 	var archivedArticle AddArchivedArticle
@@ -47,11 +48,8 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 		return *errResp, nil
 	}
 
-	//load the bucket from the environment
-	bucket := os.Getenv(pkg.EnvS3BucketArticleAssets)
-
 	//upload the image to S3
-	key, id, err := UploadToS3(sess, archivedArticle.Img, ContentTypeAutoDetect, bucket, PreviewContentPrefix)
+	key, id, err := assetsManager.UploadImageToS3(sess, archivedArticle.Img, articlemanager.PreviewContentPrefix)
 	if err != nil {
 		errMsg := fmt.Sprintf("Unable to upload preview image to S3: %v", err)
 		return pkg.ErrorResponse(500, err, errMsg, errMsg), nil

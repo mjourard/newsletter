@@ -42,7 +42,7 @@ export class SubscriptionService {
   }
 
   listSubscribers(): Observable<Subscriber[]> {
-    return this.http.get<Subscriber[]>(this.listSubsUrl)
+    return this.http.get<Subscriber[]>(this.listSubsUrl, this.httpOptions)
       .pipe(
         tap(_ => this.log("fetched subscribers")),
         catchError(this.handleError<Subscriber[]>('listSubscribers', []))

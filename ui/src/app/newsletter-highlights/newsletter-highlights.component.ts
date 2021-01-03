@@ -22,7 +22,11 @@ export class NewsletterHighlightsComponent implements OnInit {
 
   listArchivedEntries(): void {
     this.archiveService.listArchivedEntries().subscribe(
-      entries => this.newsletters = entries
+      entries => {
+        if (entries instanceof Array) {
+          this.newsletters = entries
+        }
+      }
     );
   }
 }

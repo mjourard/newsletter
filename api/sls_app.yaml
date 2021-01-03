@@ -42,7 +42,7 @@ custom:
   DYNAMO_TABLE_RECIPIENTS: ${cf:${self:custom.PERSIST_STACK_NAME}-${self:provider.stage}.RecipientTableName}
   DYNAMO_TABLE_ARTICLE_ARCHIVE: ${cf:${self:custom.PERSIST_STACK_NAME}-${self:provider.stage}.ArticleArchivesTableName}
   S3_BUCKET_ARTICLE_ASSETS: ${cf:${self:custom.PERSIST_STACK_NAME}-${self:provider.stage}.ArticleAssetsBucketName}
-  CLOUDFRONT_URL: ${cf:${self:service}-${self:provider.stage}.CFDomain}
+  CLOUDFRONT_URL: 'https://${cf:${self:service}-${self:provider.stage}.CFDomain}'
   customDomain:
     domainName: api.oyster.io
     basePath: ''

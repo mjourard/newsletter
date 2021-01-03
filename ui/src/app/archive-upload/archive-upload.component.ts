@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import {ArchiveService} from "../archive.service";
 import {ArchivedNewsletter} from "../archived-newsletter";
 import {FormsModule, NgForm, ReactiveFormsModule} from "@angular/forms";
+import {OpResult} from "../op-result";
+import {ToastService} from "../toast.service";
 
 @Component({
   selector: 'app-archive-upload',
@@ -12,17 +14,17 @@ export class ArchiveUploadComponent implements OnInit {
 
   submitted = false;
   article: ArchivedNewsletter
+  uploadResults: ArchivedNewsletter
   authors = [
     'John Adams',
     'Albert Einstein',
     'Thomas Jefferson'
   ]
   constructor(
-    private archiveService: ArchiveService
+    private archiveService: ArchiveService,
+    private toastService: ToastService
   ) {
-    this.article = {
-      abstract: "", author: "", img: "", title: ""
-    }
+    this.reset(true);
   }
 
   get diagnostic() {
@@ -57,6 +59,31 @@ export class ArchiveUploadComponent implements OnInit {
     //https://academind.com/learn/angular/snippets/angular-image-upload-made-easy/
     this.submitted = true;
     console.log(this.article);
-    this.archiveService.uploadArchivedEntry(this.article)
+    this.archiveService.uploadArchivedEntry(this.article).subscribe(response => {
+      if (response.hasOwnProperty('success')) {
+        let opResult = response as OpResult
+        if (opResult.success) {
+          this.toastService.success(opResult.message)
+        } else {
+          this.toastService.error(opResult.message);
+        }
+      } else {
+        this.uploadResults = response as ArchivedNewsletter
+      }
+    }, error => {
+      this.toastService.error(error);
+    });
+  }
+
+  reset(clear: boolean) {
+    this.submitted = false;
+    if (clear) {
+      this.article = {
+        abstract: "", author: "", img: "", title: ""
+      }
+      this.uploadResults = {
+        abstract: "", author: "", img: "", title: ""
+      }
+    }
   }
 }

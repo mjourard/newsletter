@@ -1,9 +1,4 @@
 <div class="container-fluid">
-  <div class="row">
-    <div class="col-6 mx-auto">
-      {{diagnostic}}
-    </div>
-  </div>
   <div class="row" [hidden]="submitted">
     <div class="col-sm-12 col-md-6 mx-auto">
       <form (ngSubmit)="onSubmit(archiveUploadForm)" #archiveUploadForm="ngForm">
@@ -43,23 +38,45 @@
     <div class="col-6 mx-auto">
       <h2>You submitted:</h2>
       <div class="row">
-        <div class="col-xs-3">Author</div>
+        <div class="col-xs-3">Author: </div>
         <div class="col-xs-9">{{ article.author }}</div>
       </div>
       <div class="row">
-        <div class="col-xs-3">Title</div>
+        <div class="col-xs-3">Title: </div>
         <div class="col-xs-9">{{ article.title }}</div>
       </div>
       <div class="row">
-        <div class="col-xs-3">Abstract</div>
+        <div class="col-xs-3">Abstract: </div>
         <div class="col-xs-9">{{ article.abstract }}</div>
       </div>
       <div class="row">
-        <div class="col-xs-3">Image</div>
+        <div class="col-xs-3">Image: </div>
         <div class="col-xs-9">{{ article.img | slice: 0 : 50}}</div>
       </div>
+    </div>
+  </div>
+  <div class="row" [hidden]="!submitted">
+    <div class="col-6 mx-auto">
+      <h2>New Article:</h2>
+      <div class="row">
+        <div class="col-xs-3">Author: </div>
+        <div class="col-xs-9">{{ uploadResults.author }}</div>
+      </div>
+      <div class="row">
+        <div class="col-xs-3">Title: </div>
+        <div class="col-xs-9">{{ uploadResults.title }}</div>
+      </div>
+      <div class="row">
+        <div class="col-xs-3">Abstract: </div>
+        <div class="col-xs-9">{{ uploadResults.abstract }}</div>
+      </div>
+      <div class="row">
+        <div class="col-xs-3">Image: </div>
+        <div class="col-xs-9">{{ uploadResults.img }}</div>
+      </div>
       <br>
-      <button class="btn btn-primary" (click)="submitted=false">Edit</button>
+      <button class="btn btn-secondary" (click)="reset(false)">Edit</button>
+      <button class="btn btn-primary" (click)="reset(true)">Clear</button>
     </div>
   </div>
 </div>
