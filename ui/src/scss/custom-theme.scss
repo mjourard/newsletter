@@ -1,0 +1,28 @@
+$theme: '1';
+@if $theme == '1' {
+  $primary: #14213D;
+  $secondary: #FCA311;
+  $accent: #213D14;
+} @else {
+  $primary: #02111B;
+  $secondary: #04724D;
+  $accent: #BFD7EA;
+}
+
+//variables to customize the theme
+//found in node_modules/bootstrap/scss/_variables.scss
+//$primary:       $blue !default;
+//$secondary:     $gray-600 !default;
+//$success:       $green !default;
+//$info:          $cyan !default;
+//$warning:       $yellow !default;
+//$danger:        $red !default;
+//$light:         $gray-100 !default;
+//$dark:          $gray-800 !default;
+//
+//
+//$body-bg:                   $white !default;
+//$body-color:                $gray-900 !default;
+//
+
+@import "../../node_modules/bootstrap/scss/bootstrap";

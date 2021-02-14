@@ -27,7 +27,7 @@
             "styles": [
               "./node_modules/bootstrap/dist/css/bootstrap.min.css",
               "./node_modules/ngx-bootstrap/datepicker/bs-datepicker.css",
-              "src/custom-theme.scss",
+              "src/scss/custom-theme.scss",
               "src/styles.css"
             ],
             "scripts": []
@@ -139,5 +139,10 @@
       }
     }
   },
-  "defaultProject": "ui"
+  "defaultProject": "ui",
+  "schematics": {
+    "@schematics/angular:component": {
+      "styleext": "scss"
+    }
+  }
 }
