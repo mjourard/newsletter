@@ -25,11 +25,15 @@
               "src/env.js"
             ],
             "styles": [
-              "./node_modules/bootstrap/dist/css/bootstrap.min.css",
               "./node_modules/ngx-bootstrap/datepicker/bs-datepicker.css",
               "src/scss/custom-theme.scss",
               "src/styles.css"
             ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "../node_modules/bootstrap/scss"
+              ]
+            },
             "scripts": []
           },
           "configurations": {
